@@ -1,0 +1,393 @@
+// Some variables that will be helpful to define
+var h = 400;
+var w = 400;
+var padding = 60;
+
+var colors = {kobe:["rgb(255,215,11)","rgb(128,27,179)"],
+	      taylor:["rgb(255,26,0)","rgb(0,0,0)"]};
+var tick_values = {kobe:[0,6,12,18,24,30,36,42,48],
+		   taylor:[0,5,10,15,20,25,30,35,40]};
+
+var kobe,taylor,rect; 
+
+var b = 3
+
+
+// Initialize the two svg canvases
+var svg = d3.select("#main_container")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h);
+
+var svg_2 = d3.select("#main_container")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h);
+
+// Lets create some variables for the scales
+var x_scale = d3.scale.linear()
+    .domain([0,48])
+    .range([padding, w-padding]);
+
+var y_scale = d3.scale.linear()
+    .domain([0,1])
+    .range([h-padding, padding]);
+
+// Now we need to define the axes that we will use
+var x_axis = d3.svg.axis()
+    .scale(x_scale)
+    .orient("bottom")
+    .tickFormat(d3.format("2f"))
+    .ticks(8);
+
+var y_axis = d3.svg.axis()
+    .scale(y_scale)
+    .orient("left")
+    .tickFormat(d3.format("%"))
+    .ticks(8);
+
+var xaxis_element;
+
+// This is our listener for changes in the buttons by the user
+d3.selectAll("input").on("change", function change() {
+    if (this.value === "grouped") transitionGrouped();
+    else transitionStacked();
+});
+
+// Lets read in the kobe bryant json and display
+d3.json("media/main/kobe.json", function(json) {
+    kobe = json;
+    x_scale.domain(d3.extent(json,function(d){return d.time}));
+    x_axis.tickValues(tick_values['kobe']);
+    transition_stack_area(json,svg, "kobe", "percentage");
+    // append the axes, x then y
+    svg.append("g")
+	.attr("class", "x_axis")
+	.attr("transform", "translate(0," + (h - padding) + ")")
+	.call(x_axis);
+    
+    svg.append("g")
+	.attr("class", "y_axis")
+	.attr("transform", "translate(" + padding + ",0)")
+	.call(y_axis);
+
+    // setTimeout(transition,500);
+});
+
+d3.json("media/main/grinnell.json", function(json) {
+    taylor = json;
+    x_scale.domain(d3.extent(json,function(d){return d.time}));
+    x_axis.tickValues(tick_values['taylor']);
+    transition_stack_rects(json,svg_2,"taylor","percentage");
+   // draw_something(json,svg_2,"taylor");
+    // append the axes, x then y
+    svg_2.append("g")
+	.attr("class", "x_axis")
+	.attr("transform", "translate(0," + (h - padding) + ")")
+	.call(x_axis);
+    
+    svg_2.append("g")
+	.attr("class", "y_axis")
+	.attr("transform", "translate(" + padding + ",0)")
+	.call(y_axis);
+
+
+});
+
+function transition() {
+    // if choice is taylor then do this
+    var json = taylor;
+    var player = 'taylor';
+    // ensure our x_axis is the right scale
+    
+    transition_stack_rects(json, svg, player, "points");
+}
+
+
+// Transition to a stacked area graph 
+function transition_stack_area(data,svg,player, type){
+    var y_scale = d3.scale.linear()
+	.range([h-padding, padding]);
+    var y_axis = d3.svg.axis()
+	.scale(y_scale)
+	.orient("left")
+	.ticks(8);
+
+    var x_scale = d3.scale.linear()
+	.range([padding,w-padding]);
+
+
+
+    var stack_area = d3.svg.area()
+	.x(function(d) { return x_scale(d.x); })
+	.y0(function(d) { return y_scale(d.y0); })
+	.y1(function(d) { return y_scale(d.y + d.y0); });
+  
+    var stack = d3.layout.stack();
+    // we need to manipulate the data to use the d3 stack method
+    var data_domain = get_data(data,player,type);
+    data = stack(data_domain[0]);
+    y_scale.domain(data_domain[1]);
+    y_axis.tickFormat(data_domain[2]);
+    x_scale.domain([0,d3.max(data[0],function(d){return d.x})]);
+
+    // Transition the area graph
+    var paths = svg.selectAll("path")
+	.data(data);
+    paths.enter().append("path")
+	.attr("fill","white")
+	.attr("d",stack_area)
+	.transition(2500)
+	.attr("fill",function(d,i){
+	    return colors[player][i]});
+    paths.transition()
+	.duration(2500)
+	.attr("d",stack_area)
+	.attr("fill",function(d,i){
+	    return colors[player][i]});
+
+    // Remove the rects if necessary
+    svg.selectAll("rect")
+	.data(data)
+	.transition()
+	.duration(2500)
+	.attr("fill","white")
+	.remove();
+
+
+    // Transition the x and y axis if necessary
+    svg.select(".x_axis")
+	.transition().duration(2500)
+    	.call(x_axis);
+
+    svg.select(".y_axis")
+	.transition().duration(2500)
+    	.call(y_axis);
+
+
+}
+
+
+function transition_stack_rects(data,svg,player,type){
+    var y_scale = d3.scale.linear()
+	.range([h-padding, padding]);
+    var y_axis = d3.svg.axis()
+	.scale(y_scale)
+	.orient("left")
+	.ticks(8);
+
+    var data_domain = get_data(data, player, type);
+    data = data_domain[0];
+    y_scale.domain(data_domain[1]);
+    y_axis.tickFormat(data_domain[2]);
+
+    // Data is in the format of x,y we need to group things together
+    // since we don't have that much pixelation on the rects we will
+    // take every 6th datapoint
+    var data_every_12th = [data[0].filter(function(d,i){return i%12 == 0}),
+			 data[1].filter(function(d,i){return i%12 == 0})];
+
+    var x_scale_ordinal = d3.scale.ordinal()
+	.domain(data_every_12th[0].map(function(d){return d.x}))
+	.rangeBands([padding,w-padding],.1);
+
+    var stack = d3.layout.stack();
+    var stack_data = stack(data_every_12th);
+    
+    var bar_width = x_scale_ordinal.rangeBand()
+
+    var teams = svg.selectAll(".team")
+	.data(stack_data)
+	.enter().append("g")
+	.attr("class", "team")
+	.style("fill", function(d, i) { return colors[player][i]; });
+
+    rect = teams.selectAll("rect")
+	.data(function (d){
+	    return d;})
+    rect.enter().append("rect")
+	.attr("x",function(d){
+	    return x_scale_ordinal(d.x)})
+	.attr("y",function(d){
+	    return y_scale(d.y0 + d.y)})
+	// .attr("height",function(d){return y_scale(d.y0) - y_scale(d.y0 + d.y)})
+	// .attr("width", bar_width)
+	.transition(2500)
+	.attr("height",function(d){return y_scale(d.y0) - y_scale(d.y0 + d.y)})
+	.attr("width", bar_width)
+
+    rect.transition()
+	.duration(2500)
+	.attr("x",function(d){
+	    return x_scale_ordinal(d.x)})
+	.attr("y",function(d){
+	    return y_scale(d.y0 + d.y)})
+	.attr("height",function(d){return y_scale(d.y0) - y_scale(d.y0 + d.y)})
+	.attr("width", bar_width);
+
+    svg.selectAll("path")
+	.data(data)
+	.transition()
+	.duration(2500)
+	.attr("fill","white")
+	.remove();
+
+    // Transition the x and y axis if necessary
+    svg.select(".x_axis")
+	.transition().duration(2500)
+    	.call(x_axis);
+
+    svg.select(".y_axis")
+	.transition().duration(2500)
+    	.call(y_axis);
+}
+
+function transition_group_rects(data,svg,player, type){
+    // initialize the scales we will use
+    var y_scale = d3.scale.linear()
+	.range([h-padding, padding]);    
+    var y_axis = d3.svg.axis()
+	.scale(y_scale)
+	.orient("left")
+	.ticks(8);
+
+    var stack = d3.layout.stack();
+    var data_domain = get_data(data, player, type);
+    data = data_domain[0];
+    y_scale.domain(data_domain[1]);
+    y_axis.tickFormat(data_domain[2]);
+
+    data = [data[0].filter(function(d,i){return i%12 == 0}),
+		  data[1].filter(function(d,i){return i%12 == 0})];
+
+    var x_scale_ordinal = d3.scale.ordinal()
+	.domain(data[0].map(function(d){return d.x}))
+	.rangeBands([padding,w-padding],.1);
+    
+    data = stack(data);
+    
+    var bar_width = x_scale_ordinal.rangeBand()
+    
+    var index = 0;
+
+    var teams = svg.selectAll(".team")
+	.data(data);
+    teams.enter().append("g")
+	.attr("class", "team")
+	.style("fill", function(d, i) { 
+	    return colors[player][i]; });
+    teams.transition()
+	.duration(2500)
+	.style("fill", function(d, i) { 
+	    return colors[player][i]; });
+
+    var rect = teams.selectAll("rect")
+	.data(function (d){
+	    return d;});
+    rect.enter().append("rect")
+    	.attr("x", function(d, i) {
+	    // there is an issue with using j, created a small hack
+	    var x = x_scale_ordinal(d.x) + x_scale_ordinal.rangeBand() / 2 * index;
+    	    if (i===0){index=1}
+	    return x;})
+    	.attr("width", bar_width/2)
+    	.transition()
+    	.attr("y", function(d) { 
+	    return y_scale(d.y); })
+    	.attr("height", function(d) { return h - padding - y_scale(d.y); });
+    rect.transition()
+    	.duration(2500)
+    	.delay(1000)
+    	.attr("x", function(d, i) {
+	    // there is an issue with using j, created a small hack
+	    var x = x_scale_ordinal(d.x) + x_scale_ordinal.rangeBand() / 2 * index;
+    	    if (i===0){index=1}
+	    return x;})
+    	.attr("width", bar_width/2)
+    	.transition()
+    	.attr("y", function(d) { 
+	    return y_scale(d.y); })
+    	.attr("height", function(d) { return h - padding - y_scale(d.y); });
+
+    // Transition the x and y axis if necessary
+    svg.select(".x_axis")
+	.transition().duration(2500)
+    	.call(x_axis);
+
+    svg.select(".y_axis")
+	.transition().duration(2500)
+    	.call(y_axis);
+
+}
+
+function draw_something(data, svg, player){
+    var stack_area = d3.svg.area()
+	.x(function(d) { return x_scale(d.x); })
+	.y0(function(d) { return y_scale(d.y0); })
+	.y1(function(d) { return y_scale(d.y + d.y0); });
+    
+    var stack = d3.layout.stack();
+    console.log(data);
+    var data_domain = get_data(data, player, "percentage");
+    data = data_domain[0];
+    y_scale.domain(data_domain[1]);
+    y_axis.tickFormat(data_domain[2]);
+
+    // we need to manipulate the data to use the d3 stack method
+    var stack_data = stack(data);
+
+    // create the area graph!
+    svg.selectAll("path")
+	.data(stack_data)
+	.enter().append("path")
+	.attr("d",stack_area)
+	.attr("stroke","none")
+	// .attr("stroke-width",4)
+	.attr("fill",function(d,i,j){
+	    return colors["kobe"][i]});
+
+    // lets try to draw rects instead
+
+}    
+
+function get_data (data,player,type){
+    // fix the x_axis and scale
+    x_axis.tickValues(tick_values[player]);
+    x_scale.domain(d3.extent(data,function(d){return d.time}));
+    var domain = [];
+    if (player === "kobe"){
+	if (type === "percentage"){
+	    domain = [0,1];
+	    return [[data.map(function (d) {return {x:d.time,
+						   y:d.kobe_percentage}}),
+		    data.map(function (d) {return {x:d.time,
+						   y:d.rot_percentage}})],domain, d3.format('%')];
+	}
+	else{
+	    domain = [0,d3.max(data,function(d){
+		return d.kobe_points + d.rot_points})];
+	    return [[data.map(function (d) {return {x:d.time,
+						   y:d.kobe_points}}),
+		    data.map(function (d) {return {x:d.time,
+						   y:d.rot_points}})],domain,d3.format("g")];
+	}
+    }
+    else{
+	if (type === "percentage"){
+	    domain = [0,1];
+	    return [[data.map(function (d) {return {x:d.time,
+						   y:d.jt_percentage}}),
+		    data.map(function (d) {return {x:d.time,
+						   y:d.rot_percentage}})], domain,d3.format("%")];
+	}
+	else{
+	    domain = [0,d3.max(data,function(d){
+		return d.jt_points + d.rot_points})];
+	    return [[data.map(function (d) {return {x:d.time,
+						   y:d.jt_points}}),
+		    data.map(function (d) {return {x:d.time,
+						   y:d.rot_points}})],domain, d3.format("g")];
+	}
+    }
+}
+

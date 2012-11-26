@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block js %}
+<script type="text/javascript" language = "javascript"
+	src="{{MEDIA_URL}}common/js/lib/d3/d3.js"></script>
+<script type="text/javascript" language = "javascript"
+	src="{{MEDIA_URL}}common/js/lib/jquery.min.js"></script>
+<script type="text/javascript"
+	src="{{MEDIA_URL}}common/js/lib/underscore-min.js"></script>
+{% endblock js %}
+
+{% block css %}
+<link rel="stylesheet" 
+      type="text/css" 
+      media="screen"
+      href="{{MEDIA_URL}}main/css/dummy.scss" />
+{% endblock css %}
+
+{% block title %}Sport attendance
+{% endblock title %}
+
+{% block content %}
+<div id="main_container">
+</div>
+{% endblock content %}
+
+
+{% block dynamic_javascript %}
+<script type="text/javascript">
+  {% include "main/basketball.js" %}
+</script>
+{% endblock dynamic_javascript %}

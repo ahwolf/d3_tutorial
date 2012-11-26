@@ -1,0 +1,74 @@
+
+#sport_header {
+    /* float:left; */
+}
+#sport {
+    float:none;
+    display:inline-block;
+}
+
+#team_header {
+}
+
+.x_axis path, .x_axis line, .y_axis path, .y_axis line{
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.x_axis text, .y_axis text{
+    font-family: georgia;
+    font-size: 13px;
+}
+
+.holder{
+    float:left;
+    margin-left:12px;
+    margin-right:0px;
+    font-family:MuseoSlab500;
+    font-size:10px;
+    h3{
+	margin-left:2px;
+	margin-top:8px;
+	margin-bottom:8px;
+	font-size:14px;
+    }
+    input[type="radio"] {
+    	display: none;
+    }
+    label{
+    	display:block;
+	padding:3px;
+	margin:2px;
+	/* background-color:#bbb; */
+	background: -webkit-linear-gradient(top, #bbb, #999);
+	border-radius:2px;
+    }
+    input[type="radio"]:checked + label{
+	background: -webkit-linear-gradient(top, #666, #000);
+    	color:#fff;
+    	font-weight:normal;
+    }
+}
+
+$width: 310px; 
+$margin: 5px;
+.radio_holder{
+    width:$width - 3*$margin;
+    margin-left:$margin;
+    margin-right:2*$margin;
+    height: 140px;
+    display:inline-block;
+    /* background-color:#ddd; */
+    background: -webkit-linear-gradient(top, #eee, #ddd);
+    box-shadow:3px 3px 2px 2px #bbb;
+}
+
+.legend{
+    width:$width;
+    float:left;
+}
+
+.axis_text{
+    font-size:20px;
+}
