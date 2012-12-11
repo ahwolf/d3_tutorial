@@ -22,16 +22,28 @@ var color_scale = d3.scale.linear()
     .domain([0,50,100])
     .range(['red','purple','blue']);
 
-vis.selectAll("path")
-    .data(election.features)
-    .enter().append("path")
+var mapper = vis.selectAll("path")
+    .data(election.features);
+
+mapper.enter().append("path")
     .attr('fill',function (d){
 	return color_scale(parseFloat(d.properties.percent));
     })
     .attr("d", path)
-    .append("svg:title")
-    .text(function(d){
-	return d.properties.percent + "The counties name is: " + d.properties.name;});
+
+mapper.transition()
+    .delay(1000)
+    .duration(2500)
+    .attr('fill', 'red')// function (d){
+    // 	if (parseFloat(d.properties.percent) <= 50){
+    // 	    return "red"
+    // 	}
+    // 	else{
+    // 	    return "blue"
+    // 	}
+    // })
+    .attr("stroke", "none");
+
     // .on("mouseover", function(d) {
     // 	console.log(d);
-
+console.log(election.features);
