@@ -59,14 +59,37 @@ var circles = svg.selectAll("circle")
 	return x_scale(d)/10});
 
 
-var new_circles = svg.selectAll("circle")
-    .data(data);
+// var new_circles = svg.selectAll("circle")
+//     .data(data);
 
-new_circles.transition()
+var max = d3.max(data, function(d){return d});
+console.log(max);
+circles.transition()
     .delay(1000)
     .duration(2500)
+    // .ease("linear")
     .attr("cx", function(d,i){
-	return x_scale(i)
+	if (d === max){
+	    return x_scale(i)
+	}
+	else{
+	    return x_scale(d)
+	}
     })
     .attr("cy", function(d,i){
-	return x_scale(d+3)});
+	if (d === max){
+	    return x_scale(d+3)
+	}
+	else{
+	    return y_scale(d)
+	}
+    })
+    .attr("fill", function (d,i){
+	if (d === max){
+	    return color[i];
+	}
+	else{
+	    // var index = 6 - i;
+	    return color[6 - i];
+	}
+    });
