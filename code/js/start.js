@@ -58,19 +58,20 @@ var circles = svg.selectAll("circle")
     .attr("r", function(d) {
 	return x_scale(d)/10});
 
+var data_2 = [3, 5, 7, 1, 3]
 
-// var new_circles = svg.selectAll("circle")
-//     .data(data);
+var new_circles = svg.selectAll("circle")
+    .data(data_2);
 
 var max = d3.max(data, function(d){return d});
 console.log(max);
-circles.transition()
+new_circles.transition()
     .delay(1000)
     .duration(2500)
     // .ease("linear")
     .attr("cx", function(d,i){
 	if (d === max){
-	    return x_scale(i)
+	    return x_scale(d)
 	}
 	else{
 	    return x_scale(d)
@@ -78,7 +79,7 @@ circles.transition()
     })
     .attr("cy", function(d,i){
 	if (d === max){
-	    return x_scale(d+3)
+	    return x_scale(d)
 	}
 	else{
 	    return y_scale(d)
@@ -93,3 +94,10 @@ circles.transition()
 	    return color[6 - i];
 	}
     });
+
+new_circles.exit()
+    .transition()
+    .delay(1000)
+    .duration(2500)
+    .attr("r",0)
+    .remove();
