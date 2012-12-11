@@ -7,7 +7,6 @@ var svg = d3.select("#main_container")
     .attr("width",width)
     .attr("height",height);
 
-// var data = [1,2,3];
 var data = [1,2,3,4,5,6,7];
 var color = ["black","red","blue","yellow",
 	     "green","grey","purple"];
@@ -19,7 +18,7 @@ var x_scale = d3.scale.linear()
 
 var y_scale = d3.scale.linear()
     .domain(d3.extent(data, function(d){
-	return d})
+	return d}))
     .range([height-padding, padding]);
 
 var x_axis = d3.svg.axis()
@@ -46,19 +45,28 @@ svg.append("g")
     .attr("class","x_axis")
     .call(x_axis);
 
-
-
 var circles = svg.selectAll("circle")
-    .data(data2)
+    .data(data)
     .enter().append("circle")
     .attr("cx",function(d,i){
-	console.log(d,i);
 	return x_scale(d)})
     .attr("cy",function(d){
 	return y_scale(d)})
     .attr("fill",function (d,i){
+	console.log(d,i);
 	return color[i];})
     .attr("r", function(d) {
 	return x_scale(d)/10});
 
 
+var new_circles = svg.selectAll("circle")
+    .data(data);
+
+new_circles.transition()
+    .delay(1000)
+    .duration(2500)
+    .attr("cx", function(d,i){
+	return x_scale(i)
+    })
+    .attr("cy", function(d,i){
+	return x_scale(d+3)});
