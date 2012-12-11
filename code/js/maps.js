@@ -5,6 +5,11 @@ var padding = 40;
 var albers = d3.geo.albers()
     .scale(1000)
     .origin([-87.63073,41.836084]);
+    // .translate([200,400]);
+
+var azimuthal = d3.geo.azimuthal()
+    .scale(1000)
+    .origin([-87.63073,41.836084]);
 
 var path = d3.geo.path().projection(albers);
 
@@ -23,4 +28,10 @@ vis.selectAll("path")
     .attr('fill',function (d){
 	return color_scale(parseFloat(d.properties.percent));
     })
-    .attr("d", path);
+    .attr("d", path)
+    .append("svg:title")
+    .text(function(d){
+	return d.properties.percent + "The counties name is: " + d.properties.name;});
+    // .on("mouseover", function(d) {
+    // 	console.log(d);
+

@@ -65,7 +65,9 @@ function transition_stack_area(data,svg,player, type){
 	.scale(y_scale)
 	.orient("left")
 	.ticks(8);
+
     var stack = d3.layout.stack();
+
     var x_scale = d3.scale.linear()
 	.range([padding*2,width-padding]);
     var x_axis = d3.svg.axis()
@@ -84,6 +86,9 @@ function transition_stack_area(data,svg,player, type){
 
     // we need to manipulate the data to use the d3 stack method
     var data_domain = get_data(data,player,type);
+
+    console.log(data_domain[0]);
+
     data = stack(data_domain[0]);
     y_scale.domain(data_domain[1]);
     y_axis.tickFormat(data_domain[2]);
