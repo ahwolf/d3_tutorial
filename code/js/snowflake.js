@@ -1,12 +1,12 @@
 // Some variables that will be helpful to define
-var height = 400;
-var width = 400;
+var height = 600;
+var width = 600;
 var padding = 30;
 var duration = 1000;
 
 var triangle_vertices = [
-    [width/2,0],
-    [width,0],
+    [width/2,padding],
+    [width-padding,padding],
     [width/2,height/2]
 ];
 
@@ -122,12 +122,12 @@ function animate_snowflake(){
     
     var circles = svg.selectAll("circle")
 	.remove();
-    d3.select(".snowflake").transition().duration(duration)
+    d3.select(".snowflake").transition().duration(0)
 	.attr("fill","green");
     var path_2 = svg.selectAll(".path_2")
 	.data([data_1])
     path_2.enter().append("path")
-	.attr("fill","rgba(120,120,120,1)")
+	.attr("fill","green")
 	.attr("class","path_2")
 	.attr("class","snowflake")
 	.attr("d",function (d){
