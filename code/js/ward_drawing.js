@@ -60,6 +60,38 @@ var scene;
 var renderer;
 var camera;
 
+var appConstants  = {
+
+    TRANSLATE_0 : 400,
+    TRANSLATE_1 : 400,
+    SCALE : 80000,
+    origin : [-87.63073,41.836084]
+
+}
+
+var geons = {};
+
+// this file contains all the geo related objects and functions
+geons.geoConfig = function() {
+    this.TRANSLATE_0 = appConstants.TRANSLATE_0;
+    this.TRANSLATE_1 = appConstants.TRANSLATE_1;
+    this.SCALE = appConstants.SCALE;
+    this.origin = appConstants.origin;
+
+    this.mercator = d3.geo.mercator();
+    var wtf = this;
+    this.albers = d3.geo.albers()
+	.scale(wtf.SCALE)
+	.origin(wtf.origin)
+	.translate([wtf.TRANSLATE_0,wtf.TRANSLATE_1]);
+    
+    this.path = d3.geo.path().projection(this.albers);
+
+}
+
+// geoConfig contains the configuration for the geo functions
+geo = new geons.geoConfig();
+
 initScene();
 addGeoObject();
 renderer.render( scene, camera );
