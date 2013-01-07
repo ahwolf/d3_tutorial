@@ -123,7 +123,7 @@ function addGeoObject() {
 	
 	var color_scale = d3.scale.linear()
 	    .domain(gas_eff_min_max)
-	    .range(['red','blue']);
+	    .range(['black','black']);
 	
 	var extrude_scale = d3.scale.linear()
 	    .domain(elec_eff_min_max)
@@ -143,7 +143,7 @@ function addGeoObject() {
 	
         // create a mesh based on material and extruded shape
         var toAdd = new THREE.Mesh(shape3d, material);
-	
+	console.log(toAdd);
         // rotate and position the elements nicely in the center
         toAdd.rotation.x = Math.PI/2;
         toAdd.translateX(-490);
@@ -152,7 +152,7 @@ function addGeoObject() {
 	
         // add to scene
         scene.add(toAdd);
-	console.log(scene);
+
     });
 }
 
