@@ -139,7 +139,7 @@ function addGeoObject() {
 	
         // create extrude based on electricity efficiency
         var extrude = extrude_scale(geoFeature.properties.elec_efficiency);
-	console.log("extrude",extrude);
+	console.log("extrude",extrude, "color", mathColor);
         var shape3d = mesh.extrude({amount: Math.round(extrude), 
 				    bevelEnabled: false
 				   });
