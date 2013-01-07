@@ -68,7 +68,7 @@ renderer.render( scene, camera );
 // any special stuff
 function initScene() {
     // set the scene size
-    var WIDTH = 600, HEIGHT = 600;
+    var WIDTH = 960, HEIGHT = 800;
 
     // set some camera attributes
     var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
@@ -85,7 +85,7 @@ function initScene() {
     scene.add(camera);
     camera.position.z = 550;
     camera.position.x = 0;
-    camera.position.y = 550;
+    camera.position.y = 0;
     camera.lookAt( scene.position );
     
     // start the renderer, and black background
@@ -125,7 +125,7 @@ function addGeoObject() {
 	console.log("mesh", mesh);
 	var color_scale = d3.scale.linear()
 	    .domain(gas_eff_min_max)
-	    .range(['red','red']);
+	    .range(['blue','red']);
 	
 	var extrude_scale = d3.scale.linear()
 	    .domain(elec_eff_min_max)
