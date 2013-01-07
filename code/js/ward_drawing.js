@@ -85,7 +85,7 @@ function initScene() {
     scene.add(camera);
     camera.position.z = 550;
     camera.position.x = 0;
-    camera.position.y = 0;
+    camera.position.y = 550;
     camera.lookAt( scene.position );
     
     // start the renderer, and black background
