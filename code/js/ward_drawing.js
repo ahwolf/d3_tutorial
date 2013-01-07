@@ -138,8 +138,8 @@ function addGeoObject() {
         // create extrude based on electricity efficiency
         var extrude = extrude_scale(geoFeature.properties.elec_efficiency);
         var shape3d = mesh.extrude({amount: Math.round(extrude), 
-					 bevelEnabled: false
-					});
+				    bevelEnabled: false
+				   });
 	
         // create a mesh based on material and extruded shape
         var toAdd = new THREE.Mesh(shape3d, material);
@@ -152,6 +152,7 @@ function addGeoObject() {
 	
         // add to scene
         scene.add(toAdd);
+	console.log(scene);
     });
 }
 

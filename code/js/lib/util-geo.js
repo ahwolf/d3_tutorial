@@ -8,7 +8,7 @@ geons.geoConfig = function() {
     this.origin = appConstants.origin;
 
     this.mercator = d3.geo.mercator();
-    var wtf = this
+    var wtf = this;
     this.albers = d3.geo.albers()
 	.scale(wtf.SCALE)
 	.origin(wtf.origin)
