@@ -7,10 +7,6 @@ var albers = d3.geo.albers()
     .origin([-87.63073,41.836084])
     .translate([400,400]);
 
-var azimuthal = d3.geo.azimuthal()
-    .scale(1)
-    .origin([-87.63073,41.836084]);
-
 var path = d3.geo.path().projection(albers);
 
 // Old rendering, no used for three.js
@@ -38,6 +34,7 @@ var elec_eff_min_max = d3.extent(data.features, function(feature){
     return feature.properties.elect_efficiency;
 });
 
+// Render using d3
 var color_scale = d3.scale.linear()
     .domain(elec_eff_min_max)
     .range(['red','blue']);
@@ -48,9 +45,8 @@ vis.selectAll("path")
     .attr('fill', function(d){return color_scale(d.properties.elect_efficiency);})
     .attr('stroke',"black")
     .attr("d", path);
-    // .on("mouseover", function(d) {
-    // 	console.log(d);
 
+// Render using three.js
 
 // The following code was copied from
 // http://www.smartjava.org/content/render-geographic-information-3d-threejs-and-d3js
@@ -62,8 +58,8 @@ var camera;
 
 var appConstants  = {
 
-    TRANSLATE_0 : 400,
-    TRANSLATE_1 : 400,
+    TRANSLATE_0 : 0,
+    TRANSLATE_1 : 0,
     SCALE : 80000,
     origin : [-87.63073,41.836084]
 
