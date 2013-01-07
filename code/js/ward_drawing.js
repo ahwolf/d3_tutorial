@@ -114,16 +114,12 @@ function initScene() {
 
 // add the loaded gis object (in geojson format) to the map
 function addGeoObject() {
-    // keep track of rendered objects
-    var meshes = [];
     
     // convert to mesh and calculate values
     _.each(data.features, function (geoFeature){	
         var feature = geo.path(geoFeature);
         // we only need to convert it to a three.js path
         var mesh = transformSVGPathExposed(feature);
-        // add to array
-        meshes.push(mesh);
 	
 	var color_scale = d3.scale.linear()
 	    .domain(gas_eff_min_max)
@@ -141,7 +137,7 @@ function addGeoObject() {
 	
         // create extrude based on electricity efficiency
         var extrude = extrude_scale(geoFeature.properties.elec_efficiency);
-        var shape3d = meshes[i].extrude({amount: Math.round(extrude), 
+        var shape3d = mesh.extrude({amount: Math.round(extrude), 
 					 bevelEnabled: false
 					});
 	
