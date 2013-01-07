@@ -15,7 +15,10 @@ var vis = d3.select("#main_container")
     .attr("width", w)
     .attr("height", h);
 
+// change what you would like data to equal for different geo projections
 var data = ward;
+// var data = neighborhood;
+// var data = census_tract;
 
 // calculate the max and min of all the property values
 var gas_min_max = d3.extent(data.features, function(feature){
@@ -62,7 +65,6 @@ var appConstants  = {
     TRANSLATE_1 : 0,
     SCALE : 80000,
     origin : [-87.63073,41.836084]
-
 }
 
 var geons = {};
@@ -96,7 +98,7 @@ renderer.render( scene, camera );
 // any special stuff
 function initScene() {
     // set the scene size
-    var WIDTH = 960, HEIGHT = 800;
+    var WIDTH = 600, HEIGHT = 600;
 
     // set some camera attributes
     var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
@@ -147,10 +149,14 @@ function addGeoObject() {
     // convert to mesh and calculate values
     _.each(data.features, function (geoFeature){	
         var feature = geo.path(geoFeature);
-	// console.log("feature", feature);
+
         // we only need to convert it to a three.js path
         var mesh = transformSVGPathExposed(feature);
-	console.log("mesh", mesh);
+
+	// the two different scales that we use, extrude determines
+	// the height and color is obviously color. You can choose
+	// from the max_min that we calculated above, ensure this
+	// matches with below where you call these functions.
 	var color_scale = d3.scale.linear()
 	    .domain(gas_eff_min_max)
 	    .range(['blue','red']);
@@ -159,26 +165,31 @@ function addGeoObject() {
 	    .domain(elec_eff_min_max)
 	    .range([0,100]);
 
-        // create material color based on gas efficiency
+        // create material color based on gas efficiency Ensure the
+	// property matches with the scale above, we'll add automatic
+	// matching functionality later
         var mathColor = color_scale(geoFeature.properties.gas_efficiency);
+
+	// Need to convert the color into a hexadecimal number
+	var hexMathColor = parseInt(mathColor.replace("#","0x"));
+	
+	// Change the color of the material!
         var material = new THREE.MeshLambertMaterial({
-            color: mathColor
+            color: hexMathColor
         });
 	
         // create extrude based on electricity efficiency
         var extrude = extrude_scale(geoFeature.properties.elect_efficiency);
-	console.log("extrude",extrude, "color", mathColor);
+
+	// Add the attributes to the mesh for the height of the polygon
         var shape3d = mesh.extrude({amount: Math.round(extrude), 
 				    bevelEnabled: false
 				   });
 	
         // create a mesh based on material and extruded shape
         var toAdd = new THREE.Mesh(shape3d, material);
-	console.log(toAdd);
         // rotate and position the elements nicely in the center
         toAdd.rotation.x = Math.PI/2;
-        toAdd.translateX(-490);
-        toAdd.translateZ(50);
         toAdd.translateY(extrude/2);
 	
         // add to scene
