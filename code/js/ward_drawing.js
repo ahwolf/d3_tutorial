@@ -23,20 +23,19 @@ var data = ward;
 
 // calculate the max and min of all the property values
 var gas_min_max = d3.extent(data.features, function(feature){
-    return feature.properties.gas
+    return feature.properties.gas;
 });
 
 var elec_min_max = d3.extent(data.features, function(feature){
-    return feature.properties.elect
+    return feature.properties.elect;
 });
 
 var gas_eff_min_max = d3.extent(data.features, function(feature){
-
-    return feature.properties.gas_efficiency
+    return feature.properties.gas_efficiency;
 });
 
 var elec_eff_min_max = d3.extent(data.features, function(feature){
-    return feature.properties.elect_efficiency
+    return feature.properties.elect_efficiency;
 });
 
 var color_scale = d3.scale.linear()
@@ -69,15 +68,17 @@ renderer.render( scene, camera );
 // any special stuff
 function initScene() {
     // set the scene size
-    var WIDTH = 960, HEIGHT = 800;
+    var WIDTH = 600, HEIGHT = 600;
 
     // set some camera attributes
     var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
 
     // create a WebGL renderer, camera, and a scene
     renderer = new THREE.WebGLRenderer({antialias:true});
-    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT,
-                                         NEAR, FAR);
+    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, 
+					 ASPECT,
+                                         NEAR, 
+					 FAR);
     scene = new THREE.Scene();
     
     // add and position the camera at a fixed position
@@ -118,12 +119,13 @@ function addGeoObject() {
     // convert to mesh and calculate values
     _.each(data.features, function (geoFeature){	
         var feature = geo.path(geoFeature);
+	console.log("feature", feature);
         // we only need to convert it to a three.js path
         var mesh = transformSVGPathExposed(feature);
-	
+	console.log("mesh", mesh);
 	var color_scale = d3.scale.linear()
 	    .domain(gas_eff_min_max)
-	    .range(['black','black']);
+	    .range(['red','red']);
 	
 	var extrude_scale = d3.scale.linear()
 	    .domain(elec_eff_min_max)
