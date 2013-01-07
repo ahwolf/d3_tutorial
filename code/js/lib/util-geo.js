@@ -5,6 +5,7 @@ geons.geoConfig = function() {
     this.TRANSLATE_0 = appConstants.TRANSLATE_0;
     this.TRANSLATE_1 = appConstants.TRANSLATE_1;
     this.SCALE = appConstants.SCALE;
+    this.origin = appConstants.origin;
 
     this.mercator = d3.geo.mercator();
     this.path = d3.geo.path().projection(this.mercator);
@@ -16,6 +17,7 @@ geons.geoConfig = function() {
 
         this.mercator.translate(translate);
         this.mercator.scale(this.SCALE);
+	this.mercator.origin(this.origin);
     }
 }
 
