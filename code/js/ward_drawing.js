@@ -119,7 +119,7 @@ function addGeoObject() {
     // convert to mesh and calculate values
     _.each(data.features, function (geoFeature){	
         var feature = geo.path(geoFeature);
-	console.log("feature", feature);
+	// console.log("feature", feature);
         // we only need to convert it to a three.js path
         var mesh = transformSVGPathExposed(feature);
 	console.log("mesh", mesh);
@@ -139,6 +139,7 @@ function addGeoObject() {
 	
         // create extrude based on electricity efficiency
         var extrude = extrude_scale(geoFeature.properties.elec_efficiency);
+	console.log("extrude",extrude);
         var shape3d = mesh.extrude({amount: Math.round(extrude), 
 				    bevelEnabled: false
 				   });
